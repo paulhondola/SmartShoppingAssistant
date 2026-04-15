@@ -1,0 +1,6 @@
+@SmartShoppingAssistantBackend_HostAddress = http://localhost:5120
+
+GET {{SmartShoppingAssistantBackend_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
