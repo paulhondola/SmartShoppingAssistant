@@ -1,6 +1,14 @@
+# Environment variables
+.env
+
+# Agents
+.agents/
+.claude/
+.gemini/
+
 # MacOS
 .DS_Store
 Icon?
 
-# Agents
-.agents/
+# Jetbrains IDE
+.idea/
