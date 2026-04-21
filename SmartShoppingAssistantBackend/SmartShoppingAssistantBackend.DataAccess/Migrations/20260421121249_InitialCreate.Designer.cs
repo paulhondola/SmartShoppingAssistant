@@ -11,7 +11,7 @@ using SmartShoppingAssistantBackend.DataAccess;
 namespace SmartShoppingAssistantBackend.DataAccess.Migrations
 {
     [DbContext(typeof(SmartShoppingAssistantDbContext))]
-    [Migration("20260421112214_InitialCreate")]
+    [Migration("20260421121249_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
