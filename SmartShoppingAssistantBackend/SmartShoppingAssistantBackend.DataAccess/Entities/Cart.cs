@@ -1,6 +1,6 @@
 namespace SmartShoppingAssistantBackend.DataAccess.Entities;
 
-public class CartItem
+public class Cart
 {
     public int Id { get; set; }
     public int ProductId { get; set; }

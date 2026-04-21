@@ -1,8 +1,17 @@
+using Microsoft.EntityFrameworkCore;
+using SmartShoppingAssistantBackend.DataAccess;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+builder.Services.AddDbContext<SmartShoppingAssistantDbContext>(options =>
+    options.UseNpgsql(
+        builder.Configuration.GetConnectionString("SmartShoppingAssistantContext")
+            ?? throw new InvalidOperationException("Connection string 'SmartShoppingAssistantContext' is not configured."),
+        npgsql => npgsql.MigrationsHistoryTable("__EFMigrationsHistory", "smart-shopping-assistant")));
 
 var app = builder.Build();
 

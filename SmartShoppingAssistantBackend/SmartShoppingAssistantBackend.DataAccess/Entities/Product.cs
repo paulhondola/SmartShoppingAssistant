@@ -9,7 +9,7 @@ public class Product
     public string? ImageUrl { get; set; }
 
     // Navigation properties
+    public Cart? Cart { get; set; }
     public ICollection<ProductCategory> ProductCategories { get; set; } = [];
     public ICollection<Promotion> Promotions { get; set; } = [];
-    public ICollection<CartItem> CartItems { get; set; } = [];
 }

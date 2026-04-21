@@ -10,6 +10,8 @@ public class PromotionConfiguration : IEntityTypeConfiguration<Promotion>
 
     public void Configure(EntityTypeBuilder<Promotion> builder)
     {
+        builder.ToTable("Promotions");
+        
         builder.HasKey(pr => pr.Id);
 
         builder.Property(pr => pr.Name).IsRequired().HasMaxLength(NAME_MAX_LENGTH);
@@ -28,12 +30,14 @@ public class PromotionConfiguration : IEntityTypeConfiguration<Promotion>
             .HasOne(pr => pr.Product)
             .WithMany(p => p.Promotions)
             .HasForeignKey(pr => pr.ProductId)
-            .IsRequired(false);
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.SetNull);
 
         builder
             .HasOne(pr => pr.Category)
             .WithMany(c => c.Promotions)
             .HasForeignKey(pr => pr.CategoryId)
-            .IsRequired(false);
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }

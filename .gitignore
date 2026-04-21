@@ -5,6 +5,7 @@
 .agents/
 .claude/
 .gemini/
+.remember/
 
 # MacOS
 .DS_Store

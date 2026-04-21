@@ -8,6 +8,8 @@ public class ProductCategoryConfiguration : IEntityTypeConfiguration<ProductCate
 {
     public void Configure(EntityTypeBuilder<ProductCategory> builder)
     {
+        builder.ToTable("ProductCategories");
+        
         // Composite primary key
         builder.HasKey(pc => new { pc.ProductId, pc.CategoryId });
 

@@ -9,12 +9,12 @@ public class SmartShoppingAssistantDbContext(DbContextOptions<SmartShoppingAssis
     public DbSet<Category> Categories { get; set; } = null!;
     public DbSet<ProductCategory> ProductCategories { get; set; } = null!;
     public DbSet<Promotion> Promotions { get; set; } = null!;
-    public DbSet<CartItem> CartItems { get; set; } = null!;
+    public DbSet<Cart> Cart { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        modelBuilder.HasDefaultSchema("smart-shopping-assistant");
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(SmartShoppingAssistantDbContext).Assembly);
     }
 }
-
