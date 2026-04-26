@@ -8,6 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\SmartShoppingAssistantBackend.BusinessLogic\SmartShoppingAssistantBackend.BusinessLogic.csproj" />
         <ProjectReference Include="..\SmartShoppingAssistantBackend.DataAccess\SmartShoppingAssistantBackend.DataAccess.csproj" />
     </ItemGroup>
 

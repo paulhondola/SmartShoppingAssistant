@@ -1,4 +1,5 @@
 <Solution>
   <Project Path="SmartShoppingAssistantBackend.Api\SmartShoppingAssistantBackend.Api.csproj" />
+  <Project Path="SmartShoppingAssistantBackend.BusinessLogic/SmartShoppingAssistantBackend.BusinessLogic.csproj" />
   <Project Path="SmartShoppingAssistantBackend.DataAccess/SmartShoppingAssistantBackend.DataAccess.csproj" />
 </Solution>

@@ -3,7 +3,9 @@ using SmartShoppingAssistantBackend.DataAccess.Entities;
 
 namespace SmartShoppingAssistantBackend.DataAccess;
 
-public class SmartShoppingAssistantDbContext(DbContextOptions<SmartShoppingAssistantDbContext> options) : DbContext(options)
+public class SmartShoppingAssistantDbContext(
+    DbContextOptions<SmartShoppingAssistantDbContext> options
+) : DbContext(options)
 {
     public DbSet<Product> Products { get; set; } = null!;
     public DbSet<Category> Categories { get; set; } = null!;
@@ -15,6 +17,8 @@ public class SmartShoppingAssistantDbContext(DbContextOptions<SmartShoppingAssis
     {
         base.OnModelCreating(modelBuilder);
         modelBuilder.HasDefaultSchema("smart-shopping-assistant");
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(SmartShoppingAssistantDbContext).Assembly);
+        modelBuilder.ApplyConfigurationsFromAssembly(
+            typeof(SmartShoppingAssistantDbContext).Assembly
+        );
     }
 }
