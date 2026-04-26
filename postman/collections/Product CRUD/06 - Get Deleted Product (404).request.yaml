@@ -1,0 +1,18 @@
+$kind: http-request
+name: Get Deleted Product (404)
+url: "{{baseUrl}}/api/product/999999"
+method: GET
+headers:
+  Accept: application/json
+tests: |
+  pm.test("Status is 404 Not Found", function () {
+    pm.response.to.have.status(404);
+  });
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Status is 404 Not Found", function () {
+        pm.response.to.have.status(404);
+      });
+    language: text/javascript
+order: 6000000000000

@@ -1,0 +1,56 @@
+$kind: http-request
+name: Update Product
+url: "{{baseUrl}}/api/product/{{productId}}"
+method: PUT
+headers:
+  Content-Type: application/json
+  Accept: application/json
+body:
+  type: json
+  content: |-
+    {
+        "name": "Wireless Noise-Cancelling Headphones (Refurbished)",
+        "description": "Certified refurbished wireless headphones with active noise cancellation. Like-new condition with full warranty.",
+        "price": 109.99,
+        "imageUrl": "https://placehold.co/400x400?text=Headphones+Refurb"
+    }
+scripts:
+  - type: beforeRequest
+    code: |-
+      // Ensure productId points to the first seeded product if not already set
+      if (!pm.environment.get("productId")) {
+        pm.environment.set("productId", 1);
+      }
+    language: text/javascript
+  - type: afterResponse
+    code: |-
+      pm.test("Status is 200 OK", function () {
+        pm.response.to.have.status(200);
+      });
+
+      pm.test("Name was updated", function () {
+        const body = pm.response.json();
+        pm.expect(body.name).to.eql("Wireless Noise-Cancelling Headphones (Refurbished)");
+      });
+
+      pm.test("Price was updated", function () {
+        const body = pm.response.json();
+        pm.expect(body.price).to.eql(109.99);
+      });
+
+      pm.test("Description was updated", function () {
+        const body = pm.response.json();
+        pm.expect(body.description).to.include("Refurbished");
+      });
+
+      pm.test("ID is unchanged", function () {
+        const body = pm.response.json();
+        pm.expect(body.id).to.eql(parseInt(pm.environment.get("productId")));
+      });
+
+      pm.test("ImageUrl was updated", function () {
+        const body = pm.response.json();
+        pm.expect(body.imageUrl).to.eql("https://placehold.co/400x400?text=Headphones+Refurb");
+      });
+    language: text/javascript
+order: 4000000000000
