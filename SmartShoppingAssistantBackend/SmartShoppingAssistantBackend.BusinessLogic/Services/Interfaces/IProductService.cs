@@ -1,4 +1,4 @@
-using SmartShoppingAssistantBackend.BusinessLogic.DTOs;
+using SmartShoppingAssistantBackend.BusinessLogic.DTOs.Products;
 
 namespace SmartShoppingAssistantBackend.BusinessLogic.Services.Interfaces;
 

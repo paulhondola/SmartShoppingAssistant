@@ -1,3 +1,5 @@
+using SmartShoppingAssistantBackend.BusinessLogic.DTOs.Products;
+
 namespace SmartShoppingAssistantBackend.BusinessLogic.DTOs.Categories;
 
 public class CategoryGetDto
@@ -5,5 +7,5 @@ public class CategoryGetDto
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
-    public List<string> Products { get; set; } = [];
+    public List<ProductSummaryDto> Products { get; set; } = [];
 }

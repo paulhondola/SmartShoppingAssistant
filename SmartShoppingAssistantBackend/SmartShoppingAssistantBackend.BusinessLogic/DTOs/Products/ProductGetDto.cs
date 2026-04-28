@@ -1,3 +1,6 @@
+using SmartShoppingAssistantBackend.BusinessLogic.DTOs.Categories;
+using SmartShoppingAssistantBackend.BusinessLogic.DTOs.Promotions;
+
 namespace SmartShoppingAssistantBackend.BusinessLogic.DTOs.Products;
 
 public class ProductGetDto
@@ -7,5 +10,6 @@ public class ProductGetDto
     public decimal Price { get; set; }
     public string Description { get; set; } = null!;
     public string? ImageUrl { get; set; }
-    public List<int>? CategoryIds { get; set; } = new();
+    public List<CategorySummaryDto> Categories { get; set; } = [];
+    public List<PromotionSummaryDto> Promotions { get; set; } = [];
 }

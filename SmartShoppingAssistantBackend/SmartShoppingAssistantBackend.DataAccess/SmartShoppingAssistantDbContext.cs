@@ -9,7 +9,6 @@ public class SmartShoppingAssistantDbContext(
 {
     public DbSet<Product> Products { get; set; } = null!;
     public DbSet<Category> Categories { get; set; } = null!;
-    public DbSet<ProductCategory> ProductCategories { get; set; } = null!;
     public DbSet<Promotion> Promotions { get; set; } = null!;
     public DbSet<Cart> Cart { get; set; } = null!;
 

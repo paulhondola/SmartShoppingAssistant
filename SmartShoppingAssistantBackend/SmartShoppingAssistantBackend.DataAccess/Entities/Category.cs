@@ -7,6 +7,6 @@ public class Category
     public string? Description { get; set; }
 
     // Navigation properties
-    public ICollection<ProductCategory> ProductCategories { get; set; } = [];
+    public ICollection<Product> Products { get; set; } = [];
     public ICollection<Promotion> Promotions { get; set; } = [];
 }

@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using SmartShoppingAssistantBackend.BusinessLogic.DTOs;
+using SmartShoppingAssistantBackend.BusinessLogic.DTOs.Products;
 using SmartShoppingAssistantBackend.BusinessLogic.Services.Interfaces;
 
 namespace SmartShoppingAssistantBackend.Controllers;

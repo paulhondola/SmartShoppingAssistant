@@ -1,7 +1,8 @@
 using SmartShoppingAssistantBackend.BusinessLogic.DTOs.Categories;
+using SmartShoppingAssistantBackend.BusinessLogic.DTOs.Products;
 using SmartShoppingAssistantBackend.BusinessLogic.Services.Interfaces;
 using SmartShoppingAssistantBackend.DataAccess.Entities;
-using SmartShoppingAssistantBackend.DataAccess.Repositories;
+using SmartShoppingAssistantBackend.DataAccess.Repositories.Interfaces;
 
 namespace SmartShoppingAssistantBackend.BusinessLogic.Services;
 
@@ -64,7 +65,7 @@ public class CategoryService(IRepository<Category> categoryRepository) : ICatego
             Name = category.Name,
             Description = category.Description ?? string.Empty,
             Products = category.Products
-                .Select(pc => pc.Name)
+                .Select(p => new ProductSummaryDto { Id = p.Id, Name = p.Name })
                 .ToList()
         };
     }

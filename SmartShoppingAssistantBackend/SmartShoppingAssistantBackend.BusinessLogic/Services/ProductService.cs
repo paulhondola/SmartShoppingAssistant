@@ -1,12 +1,20 @@
-using SmartShoppingAssistantBackend.BusinessLogic.DTOs;
+using SmartShoppingAssistantBackend.BusinessLogic.DTOs.Categories;
+using SmartShoppingAssistantBackend.BusinessLogic.DTOs.Products;
+using SmartShoppingAssistantBackend.BusinessLogic.DTOs.Promotions;
 using SmartShoppingAssistantBackend.BusinessLogic.Services.Interfaces;
 using SmartShoppingAssistantBackend.DataAccess.Entities;
-using SmartShoppingAssistantBackend.DataAccess.Repositories;
+using SmartShoppingAssistantBackend.DataAccess.Repositories.Interfaces;
 
 namespace SmartShoppingAssistantBackend.BusinessLogic.Services;
 
 public class ProductService(IRepository<Product> productRepository) : IProductService
 {
+    public async Task DeleteProductAsync(int id)
+    {
+        var product = await productRepository.GetByIdAsync(id);
+        await productRepository.DeleteAsync(product);
+    }
+
     public async Task<ProductGetDto> GetProductByIdAsync(int id)
     {
         var product = await productRepository.GetByIdAsync(id)
@@ -55,12 +63,6 @@ public class ProductService(IRepository<Product> productRepository) : IProductSe
         return MapToDto(updated);
     }
 
-    public async Task DeleteProductAsync(int id)
-    {
-        var product = await productRepository.GetByIdAsync(id);
-        await productRepository.DeleteAsync(product);
-    }
-
     private static ProductGetDto MapToDto(Product product)
     {
         return new ProductGetDto
@@ -70,8 +72,20 @@ public class ProductService(IRepository<Product> productRepository) : IProductSe
             Description = product.Description ?? string.Empty,
             Price = product.Price,
             ImageUrl = product.ImageUrl,
-            Categories = product.ProductCategories
-                .Select(pc => pc.Category.Name)
+            Categories = product.Categories
+                .Select(c => new CategorySummaryDto { Id = c.Id, Name = c.Name })
+                .ToList(),
+            Promotions = product.Promotions
+                .Concat(product.Categories.SelectMany(c => c.Promotions))
+                .DistinctBy(p => p.Id)
+                .Select(p => new PromotionSummaryDto
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Reward = p.Reward,
+                    RewardValue = p.RewardValue,
+                    IsActive = p.IsActive
+                })
                 .ToList()
         };
     }

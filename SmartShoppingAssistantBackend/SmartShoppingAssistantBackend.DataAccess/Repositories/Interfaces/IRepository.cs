@@ -1,4 +1,4 @@
-namespace SmartShoppingAssistantBackend.DataAccess.Repositories;
+namespace SmartShoppingAssistantBackend.DataAccess.Repositories.Interfaces;
 
 public interface IRepository<TEntity>
     where TEntity : class

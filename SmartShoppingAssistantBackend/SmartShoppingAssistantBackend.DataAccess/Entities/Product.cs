@@ -10,6 +10,6 @@ public class Product
 
     // Navigation properties
     public Cart? Cart { get; set; }
-    public ICollection<ProductCategory> ProductCategories { get; set; } = [];
+    public ICollection<Category> Categories { get; set; } = [];
     public ICollection<Promotion> Promotions { get; set; } = [];
 }

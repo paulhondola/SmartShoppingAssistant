@@ -1,8 +1,10 @@
+using SmartShoppingAssistantBackend.BusinessLogic.DTOs.Categories;
+using SmartShoppingAssistantBackend.BusinessLogic.DTOs.Products;
 using SmartShoppingAssistantBackend.DataAccess.Entities.Enums;
 
-namespace SmartShoppingAssistantBackend.DataAccess.Entities;
+namespace SmartShoppingAssistantBackend.BusinessLogic.DTOs.Promotions;
 
-public class Promotion
+public class PromotionGetDto
 {
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
@@ -10,11 +12,7 @@ public class Promotion
     public decimal Threshold { get; set; }
     public PromotionReward Reward { get; set; }
     public int RewardValue { get; set; }
-    public int? ProductId { get; set; }
-    public int? CategoryId { get; set; }
     public bool IsActive { get; set; }
-
-    // Navigation properties
-    public Product? Product { get; set; }
-    public Category? Category { get; set; }
+    public ProductSummaryDto? Product { get; set; }
+    public CategorySummaryDto? Category { get; set; }
 }

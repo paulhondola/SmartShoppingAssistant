@@ -1,7 +1,9 @@
+using SmartShoppingAssistantBackend.BusinessLogic.DTOs.Categories;
+using SmartShoppingAssistantBackend.BusinessLogic.DTOs.Products;
 using SmartShoppingAssistantBackend.BusinessLogic.DTOs.Promotions;
 using SmartShoppingAssistantBackend.BusinessLogic.Services.Interfaces;
 using SmartShoppingAssistantBackend.DataAccess.Entities;
-using SmartShoppingAssistantBackend.DataAccess.Repositories;
+using SmartShoppingAssistantBackend.DataAccess.Repositories.Interfaces;
 
 namespace SmartShoppingAssistantBackend.BusinessLogic.Services;
 
@@ -80,8 +82,9 @@ public class PromotionService(IRepository<Promotion> promotionRepository) : IPro
         await promotionRepository.DeleteAsync(promotion);
     }
 
-    private static PromotionGetDto MapToDto(Promotion promotion) =>
-        new()
+    private static PromotionGetDto MapToDto(Promotion promotion)
+    {
+        return new PromotionGetDto
         {
             Id = promotion.Id,
             Name = promotion.Name,
@@ -90,7 +93,12 @@ public class PromotionService(IRepository<Promotion> promotionRepository) : IPro
             Reward = promotion.Reward,
             RewardValue = promotion.RewardValue,
             IsActive = promotion.IsActive,
-            ProductName = promotion.Product?.Name,
-            CategoryName = promotion.Category?.Name
+            Product = promotion.Product is { } p
+                ? new ProductSummaryDto { Id = p.Id, Name = p.Name }
+                : null,
+            Category = promotion.Category is { } c
+                ? new CategorySummaryDto { Id = c.Id, Name = c.Name }
+                : null
         };
+    }
 }

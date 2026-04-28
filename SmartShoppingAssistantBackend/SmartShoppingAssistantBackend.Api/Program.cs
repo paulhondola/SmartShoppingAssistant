@@ -4,6 +4,7 @@ using SmartShoppingAssistantBackend.BusinessLogic.Services.Interfaces;
 using SmartShoppingAssistantBackend.DataAccess;
 using SmartShoppingAssistantBackend.DataAccess.Entities;
 using SmartShoppingAssistantBackend.DataAccess.Repositories;
+using SmartShoppingAssistantBackend.DataAccess.Repositories.Interfaces;
 using SmartShoppingAssistantBackend.DataAccess.Seeding;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,8 +12,17 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
-builder.Services.AddScoped<IRepository<Product>, BaseRepository<Product>>();
+// Product
+builder.Services.AddScoped<IRepository<Product>, ProductRepository>();
 builder.Services.AddScoped<IProductService, ProductService>();
+
+// Categories
+builder.Services.AddScoped<IRepository<Category>, BaseRepository<Category>>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+
+// Promotions
+builder.Services.AddScoped<IRepository<Promotion>, BaseRepository<Promotion>>();
+builder.Services.AddScoped<IPromotionService, PromotionService>();
 
 builder.Services.AddDbContext<SmartShoppingAssistantDbContext>(options =>
     options.UseNpgsql(
