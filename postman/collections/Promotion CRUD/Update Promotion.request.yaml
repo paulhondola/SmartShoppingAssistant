@@ -1,0 +1,54 @@
+$kind: http-request
+url: "{{baseUrl}}/api/promotion/{{promotionId}}"
+method: PUT
+headers:
+  Content-Type: application/json
+  Accept: application/json
+body:
+  type: json
+  content: |-
+    {
+      "name": "Test Promotion (Updated)",
+      "threshold": 5,
+      "rewardValue": 20,
+      "isActive": false
+    }
+scripts:
+  - type: beforeRequest
+    code: |-
+      if (!pm.environment.get("promotionId")) {
+        pm.environment.set("promotionId", 1);
+      }
+    language: text/javascript
+  - type: afterResponse
+    code: |-
+      pm.test("Status is 200 OK", function () {
+        pm.response.to.have.status(200);
+      });
+
+      pm.test("Name was updated", function () {
+        const body = pm.response.json();
+        pm.expect(body.name).to.eql("Test Promotion (Updated)");
+      });
+
+      pm.test("Threshold was updated", function () {
+        const body = pm.response.json();
+        pm.expect(body.threshold).to.eql(5);
+      });
+
+      pm.test("RewardValue was updated", function () {
+        const body = pm.response.json();
+        pm.expect(body.rewardValue).to.eql(20);
+      });
+
+      pm.test("IsActive was updated", function () {
+        const body = pm.response.json();
+        pm.expect(body.isActive).to.eql(false);
+      });
+
+      pm.test("ID is unchanged", function () {
+        const body = pm.response.json();
+        pm.expect(body.id).to.eql(parseInt(pm.environment.get("promotionId")));
+      });
+    language: text/javascript
+order: 4000

@@ -1,18 +1,13 @@
 $kind: http-request
-name: Delete Non-existent Product (404)
-url: "{{baseUrl}}/api/product/999999"
+url: "{{baseUrl}}/api/promotion/999999"
 method: DELETE
 headers:
   Accept: application/json
-tests: |
-  pm.test("Status is 404 Not Found", function () {
-    pm.response.to.have.status(404);
-  });
 scripts:
   - type: afterResponse
-    code: |-
+    code: |
       pm.test("Status is 404 Not Found", function () {
         pm.response.to.have.status(404);
       });
     language: text/javascript
-order: 8000000000000
+order: 8000

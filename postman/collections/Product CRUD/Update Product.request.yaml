@@ -1,5 +1,4 @@
 $kind: http-request
-name: Update Product
 url: "{{baseUrl}}/api/product/{{productId}}"
 method: PUT
 headers:
@@ -53,4 +52,4 @@ scripts:
         pm.expect(body.imageUrl).to.eql("https://placehold.co/400x400?text=Headphones+Refurb");
       });
     language: text/javascript
-order: 4000000000000
+order: 4000

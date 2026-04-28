@@ -1,0 +1,13 @@
+$kind: http-request
+url: "{{baseUrl}}/api/category/999999"
+method: DELETE
+headers:
+  Accept: application/json
+scripts:
+  - type: afterResponse
+    code: |
+      pm.test("Status is 404 Not Found", function () {
+        pm.response.to.have.status(404);
+      });
+    language: text/javascript
+order: 8000

@@ -1,4 +1,4 @@
-namespace SmartShoppingAssistantBackend.BusinessLogic.DTOs;
+namespace SmartShoppingAssistantBackend.BusinessLogic.DTOs.Products;
 
 public class ProductGetDto
 {
@@ -7,5 +7,5 @@ public class ProductGetDto
     public decimal Price { get; set; }
     public string Description { get; set; } = null!;
     public string? ImageUrl { get; set; }
-    public List<string> Categories { get; set; } = new List<string>();
+    public List<int>? CategoryIds { get; set; } = new();
 }
