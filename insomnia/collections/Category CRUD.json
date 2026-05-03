@@ -1,0 +1,276 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2026-05-03T17:52:32.618952+00:00",
+  "__export_source": "SmartShoppingAssistant Postman migration",
+  "resources": [
+    {
+      "_id": "wrk_category-crud",
+      "_type": "workspace",
+      "name": "Category CRUD",
+      "description": "Imported from Category CRUD.postman_collection.json",
+      "scope": "collection",
+      "created": 0,
+      "modified": 0
+    },
+    {
+      "_id": "env_category-crud",
+      "_type": "environment",
+      "parentId": "wrk_category-crud",
+      "name": "Local",
+      "data": {
+        "baseUrl": "http://localhost:5120",
+        "productId": "1",
+        "categoryId": "1"
+      },
+      "created": 0,
+      "modified": 0
+    },
+    {
+      "_id": "grp_category-crud",
+      "_type": "request_group",
+      "parentId": "wrk_category-crud",
+      "name": "Category CRUD",
+      "description": "",
+      "created": 0,
+      "modified": 0
+    },
+    {
+      "_id": "req_category-crud_01",
+      "_type": "request",
+      "parentId": "grp_category-crud",
+      "name": "Get All Categories",
+      "method": "GET",
+      "url": "{{baseUrl}}/api/category",
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {},
+      "body": {},
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "settingRepeatDelay": 0,
+      "settingMaxRedirects": 0,
+      "created": 0,
+      "modified": 0
+    },
+    {
+      "_id": "req_category-crud_02",
+      "_type": "request",
+      "parentId": "grp_category-crud",
+      "name": "Create Category",
+      "method": "POST",
+      "url": "{{baseUrl}}/api/category",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {},
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Test Category\",\n  \"description\": \"A category created by Postman tests\"\n}\n"
+      },
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "settingRepeatDelay": 0,
+      "settingMaxRedirects": 0,
+      "created": 0,
+      "modified": 0
+    },
+    {
+      "_id": "req_category-crud_03",
+      "_type": "request",
+      "parentId": "grp_category-crud",
+      "name": "Get Category by ID",
+      "method": "GET",
+      "url": "{{baseUrl}}/api/category/{{categoryId}}",
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {},
+      "body": {},
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "settingRepeatDelay": 0,
+      "settingMaxRedirects": 0,
+      "created": 0,
+      "modified": 0
+    },
+    {
+      "_id": "req_category-crud_04",
+      "_type": "request",
+      "parentId": "grp_category-crud",
+      "name": "Update Category",
+      "method": "PUT",
+      "url": "{{baseUrl}}/api/category/{{categoryId}}",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {},
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Test Category (Updated)\",\n  \"description\": \"Description updated by Postman tests\"\n}"
+      },
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "settingRepeatDelay": 0,
+      "settingMaxRedirects": 0,
+      "created": 0,
+      "modified": 0
+    },
+    {
+      "_id": "req_category-crud_05",
+      "_type": "request",
+      "parentId": "grp_category-crud",
+      "name": "Delete Category",
+      "method": "DELETE",
+      "url": "{{baseUrl}}/api/category/{{deleteCategoryId}}",
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {},
+      "body": {},
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "settingRepeatDelay": 0,
+      "settingMaxRedirects": 0,
+      "created": 0,
+      "modified": 0
+    },
+    {
+      "_id": "req_category-crud_06",
+      "_type": "request",
+      "parentId": "grp_category-crud",
+      "name": "Get Deleted Category (404)",
+      "method": "GET",
+      "url": "{{baseUrl}}/api/category/{{categoryId}}",
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {},
+      "body": {},
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "settingRepeatDelay": 0,
+      "settingMaxRedirects": 0,
+      "created": 0,
+      "modified": 0
+    },
+    {
+      "_id": "req_category-crud_07",
+      "_type": "request",
+      "parentId": "grp_category-crud",
+      "name": "Update Non-existent Category (404)",
+      "method": "PUT",
+      "url": "{{baseUrl}}/api/category/999999",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {},
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Ghost Category\"\n}\n"
+      },
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "settingRepeatDelay": 0,
+      "settingMaxRedirects": 0,
+      "created": 0,
+      "modified": 0
+    },
+    {
+      "_id": "req_category-crud_08",
+      "_type": "request",
+      "parentId": "grp_category-crud",
+      "name": "Delete Non-existent Category (404)",
+      "method": "DELETE",
+      "url": "{{baseUrl}}/api/category/999999",
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "parameters": [],
+      "authentication": {},
+      "body": {},
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "settingRepeatDelay": 0,
+      "settingMaxRedirects": 0,
+      "created": 0,
+      "modified": 0
+    }
+  ]
+}

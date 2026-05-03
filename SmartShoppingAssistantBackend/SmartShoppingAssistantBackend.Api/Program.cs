@@ -24,6 +24,10 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IRepository<Promotion>, BaseRepository<Promotion>>();
 builder.Services.AddScoped<IPromotionService, PromotionService>();
 
+// Cart
+builder.Services.AddScoped<IRepository<Cart>, BaseRepository<Cart>>();
+builder.Services.AddScoped<ICartService, CartService>();
+
 builder.Services.AddDbContext<SmartShoppingAssistantDbContext>(options =>
     options.UseNpgsql(
         builder.Configuration.GetConnectionString("SmartShoppingAssistantContext")

@@ -1,0 +1,12 @@
+using SmartShoppingAssistantBackend.BusinessLogic.DTOs.Cart;
+
+namespace SmartShoppingAssistantBackend.BusinessLogic.Services.Interfaces;
+
+public interface ICartService
+{
+    Task<List<CartGetDto>> GetCartAsync();
+    Task<CartGetDto> AddItemToCartAsync(CartCreateDto cartCreateDto);
+    Task<CartGetDto> UpdateCartItemQuantityAsync(int itemId, CartUpdateDto cartUpdateDto);
+    Task DeleteCartItemAsync(int itemId);
+    Task DeleteCartAsync();
+}

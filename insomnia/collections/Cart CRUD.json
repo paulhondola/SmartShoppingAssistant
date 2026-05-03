@@ -1,0 +1,447 @@
+{
+  "info": {
+    "name": "Cart CRUD",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Get All Cart Items",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/cart",
+          "host": [
+            "{{baseUrl}}/api/cart"
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status is 200 OK\", function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Response is an array\", function () {",
+              "  const body = pm.response.json();",
+              "  pm.expect(body).to.be.an(\"array\");",
+              "});",
+              "",
+              "pm.test(\"Each cart item has required fields\", function () {",
+              "  const body = pm.response.json();",
+              "  body.forEach(function (item) {",
+              "    pm.expect(item).to.have.property(\"id\");",
+              "    pm.expect(item).to.have.property(\"productId\");",
+              "    pm.expect(item).to.have.property(\"quantity\");",
+              "  });",
+              "});",
+              ""
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Add Item to Cart",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/cart/items",
+          "host": [
+            "{{baseUrl}}/api/cart/items"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"productId\": {{productId}},\n  \"quantity\": 1\n}\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status is 200 OK\", function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Response has created cart item fields\", function () {",
+              "  const body = pm.response.json();",
+              "  pm.expect(body).to.have.property(\"id\");",
+              "  pm.expect(body).to.have.property(\"productId\");",
+              "  pm.expect(body).to.have.property(\"quantity\");",
+              "});",
+              "",
+              "pm.test(\"ID is a positive integer\", function () {",
+              "  const body = pm.response.json();",
+              "  pm.expect(body.id).to.be.a(\"number\").and.to.be.above(0);",
+              "});",
+              "",
+              "// Save ID for use in subsequent requests",
+              "const body = pm.response.json();",
+              "pm.environment.set(\"cartItemId\", body.id);",
+              ""
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Update Cart Item Quantity",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/cart/items/{{cartItemId}}",
+          "host": [
+            "{{baseUrl}}/api/cart/items/{{cartItemId}}"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"quantity\": 2\n}\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// Ensure cartItemId exists; create one if missing",
+              "if (!pm.environment.get(\"cartItemId\")) {",
+              "  const baseUrl = pm.environment.get(\"baseUrl\");",
+              "  pm.sendRequest({",
+              "    url: baseUrl + \"/api/cart/items\",",
+              "    method: \"POST\",",
+              "    header: { \"Content-Type\": \"application/json\" },",
+              "    body: { mode: \"raw\", raw: JSON.stringify({ productId: parseInt(pm.environment.get(\"productId\") || 1), quantity: 1 }) }",
+              "  }, function (err, res) {",
+              "    if (err) {",
+              "      console.error(\"Failed to create cart item for update test:\", err);",
+              "    } else {",
+              "      const created = res.json();",
+              "      pm.environment.set(\"cartItemId\", created.id);",
+              "    }",
+              "  });",
+              "}"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status is 200 OK\", function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Quantity was updated\", function () {",
+              "  const body = pm.response.json();",
+              "  pm.expect(body.quantity).to.eql(2);",
+              "});",
+              ""
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Delete Cart Item",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/cart/items/{{deleteCartItemId}}",
+          "host": [
+            "{{baseUrl}}/api/cart/items/{{deleteCartItemId}}"
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// Create a placeholder cart item to delete",
+              "const baseUrl = pm.environment.get(\"baseUrl\");",
+              "pm.sendRequest({",
+              "  url: baseUrl + \"/api/cart/items\",",
+              "  method: \"POST\",",
+              "  header: { \"Content-Type\": \"application/json\" },",
+              "  body: { mode: \"raw\", raw: JSON.stringify({ productId: parseInt(pm.environment.get(\"productId\") || 1), quantity: 1 }) }",
+              "}, function (err, res) {",
+              "  if (err) {",
+              "    console.error(\"Failed to create placeholder cart item:\", err);",
+              "  } else {",
+              "    const created = res.json();",
+              "    pm.environment.set(\"deleteCartItemId\", created.id);",
+              "  }",
+              "});"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status is 204 No Content\", function () {",
+              "  pm.response.to.have.status(204);",
+              "});",
+              "",
+              "pm.test(\"Response body is empty\", function () {",
+              "  pm.expect(pm.response.text()).to.be.empty;",
+              "});",
+              "",
+              "// Clean up the temporary variable",
+              "pm.environment.unset(\"deleteCartItemId\");",
+              ""
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reset Cart (Clear)",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/cart",
+          "host": [
+            "{{baseUrl}}/api/cart"
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// Ensure there is at least one item in the cart before clearing",
+              "if (!pm.environment.get(\"cartItemId\")) {",
+              "  pm.sendRequest({",
+              "    url: pm.environment.get(\"baseUrl\") + \"/api/cart/items\",",
+              "    method: \"POST\",",
+              "    header: { \"Content-Type\": \"application/json\" },",
+              "    body: { mode: \"raw\", raw: JSON.stringify({ productId: parseInt(pm.environment.get(\"productId\") || 1), quantity: 1 }) }",
+              "  }, function (err, res) {",
+              "    if (!err) {",
+              "      const created = res.json();",
+              "      pm.environment.set(\"cartItemId\", created.id);",
+              "    }",
+              "  });",
+              "}"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status is 204 No Content\", function () {",
+              "  pm.response.to.have.status(204);",
+              "});",
+              "",
+              "pm.test(\"Response body is empty\", function () {",
+              "  pm.expect(pm.response.text()).to.be.empty;",
+              "});",
+              ""
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get Deleted Cart Item (404)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/cart/{{cartItemId}}",
+          "host": [
+            "{{baseUrl}}/api/cart/{{cartItemId}}"
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// Delete the cart item created earlier before verifying 404",
+              "const baseUrl = pm.environment.get(\"baseUrl\");",
+              "const id = pm.environment.get(\"cartItemId\");",
+              "if (id) {",
+              "  pm.sendRequest({ url: baseUrl + \"/api/cart/items/\" + id, method: \"DELETE\" }, function (err, res) {",
+              "    if (!err) console.log(\"Deleted item for 404 test\");",
+              "  });",
+              "}"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status is 404 Not Found\", function () {",
+              "  pm.response.to.have.status(404);",
+              "});",
+              "",
+              "// Clean up cartItemId since the resource is gone",
+              "pm.environment.unset(\"cartItemId\");",
+              ""
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Update Non-existent Cart Item (404)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/cart/items/999999",
+          "host": [
+            "{{baseUrl}}/api/cart/items/999999"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"quantity\": 5\n}\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status is 404 Not Found\", function () {",
+              "  pm.response.to.have.status(404);",
+              "});",
+              ""
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Delete Non-existent Cart Item (404)",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/cart/items/999999",
+          "host": [
+            "{{baseUrl}}/api/cart/items/999999"
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status is 404 Not Found\", function () {",
+              "  pm.response.to.have.status(404);",
+              "});",
+              ""
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
+
