@@ -1,0 +1,27 @@
+$kind: http-request
+url: "{{baseUrl}}/api/cart"
+method: GET
+headers:
+  Accept: application/json
+scripts:
+  - type: afterResponse
+    code: |
+      pm.test("Status is 200 OK", function () {
+        pm.response.to.have.status(200);
+      });
+
+      pm.test("Response is an array", function () {
+        const body = pm.response.json();
+        pm.expect(body).to.be.an("array");
+      });
+
+      pm.test("Each cart item has required fields", function () {
+        const body = pm.response.json();
+        body.forEach(function (item) {
+          pm.expect(item).to.have.property("id");
+          pm.expect(item).to.have.property("productId");
+          pm.expect(item).to.have.property("quantity");
+        });
+      });
+    language: text/javascript
+order: 1000

@@ -1,0 +1,27 @@
+$kind: http-request
+url: "{{baseUrl}}/api/cart/{{cartItemId}}"
+method: GET
+headers:
+  Accept: application/json
+scripts:
+  - type: beforeRequest
+    code: |-
+      // Delete the cart item created earlier before verifying 404
+      const baseUrl = pm.environment.get("baseUrl");
+      const id = pm.environment.get("cartItemId");
+      if (id) {
+        pm.sendRequest({ url: baseUrl + "/api/cart/items/" + id, method: "DELETE" }, function (err, res) {
+          if (!err) console.log("Deleted item for 404 test");
+        });
+      }
+    language: text/javascript
+  - type: afterResponse
+    code: |
+      pm.test("Status is 404 Not Found", function () {
+        pm.response.to.have.status(404);
+      });
+
+      // Clean up cartItemId since the resource is gone
+      pm.environment.unset("cartItemId");
+    language: text/javascript
+order: 6000

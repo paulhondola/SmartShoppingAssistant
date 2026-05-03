@@ -1,0 +1,50 @@
+$kind: http-request
+url: "{{baseUrl}}/api/product/{{deleteProductId}}"
+method: DELETE
+headers:
+  Accept: application/json
+scripts:
+  - type: beforeRequest
+    code: |-
+      // Create a placeholder product to delete, so seeded data is never destroyed
+      const baseUrl = pm.environment.get("baseUrl");
+      pm.sendRequest(
+        {
+          url: baseUrl + "/api/product",
+          method: "POST",
+          header: { "Content-Type": "application/json" },
+          body: {
+            mode: "raw",
+            raw: JSON.stringify({
+              name: "Placeholder Product (to be deleted)",
+              description: "Temporary product created by Postman pre-request script for delete test.",
+              price: 0.01,
+              imageUrl: "https://placehold.co/400x400?text=Delete+Me"
+            })
+          }
+        },
+        function (err, res) {
+          if (err) {
+            console.error("Failed to create placeholder product:", err);
+          } else {
+            const created = res.json();
+            pm.environment.set("deleteProductId", created.id);
+            console.log("Placeholder product created with ID:", created.id);
+          }
+        }
+      );
+    language: text/javascript
+  - type: afterResponse
+    code: |-
+      pm.test("Status is 204 No Content", function () {
+        pm.response.to.have.status(204);
+      });
+
+      pm.test("Response body is empty", function () {
+        pm.expect(pm.response.text()).to.be.empty;
+      });
+
+      // Clean up the temporary variable
+      pm.environment.unset("deleteProductId");
+    language: text/javascript
+order: 5000

@@ -1,0 +1,32 @@
+$kind: http-request
+url: "{{baseUrl}}/api/product/{{productId}}"
+method: GET
+headers:
+  Accept: application/json
+scripts:
+  - type: afterResponse
+    code: |
+      pm.test("Status is 200 OK", function () {
+        pm.response.to.have.status(200);
+      });
+
+      pm.test("Response has correct ID", function () {
+        const body = pm.response.json();
+        pm.expect(body.id).to.eql(parseInt(pm.environment.get("productId")));
+      });
+
+      pm.test("Response has required fields", function () {
+        const body = pm.response.json();
+        pm.expect(body).to.have.property("id");
+        pm.expect(body).to.have.property("name");
+        pm.expect(body).to.have.property("price");
+        pm.expect(body).to.have.property("description");
+        pm.expect(body).to.have.property("categories");
+      });
+
+      pm.test("Name matches created value", function () {
+        const body = pm.response.json();
+        pm.expect(body.name).to.eql("Test Product");
+      });
+    language: text/javascript
+order: 3000

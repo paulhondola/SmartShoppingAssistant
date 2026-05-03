@@ -1,0 +1,37 @@
+$kind: http-request
+url: "{{baseUrl}}/api/category/{{categoryId}}"
+method: GET
+headers:
+  Accept: application/json
+scripts:
+  - type: beforeRequest
+    code: |-
+      // Delete the category created in step 02 before verifying 404
+      const baseUrl = pm.environment.get("baseUrl");
+      const categoryId = pm.environment.get("categoryId");
+      if (categoryId) {
+        pm.sendRequest(
+          {
+            url: baseUrl + "/api/category/" + categoryId,
+            method: "DELETE"
+          },
+          function (err, res) {
+            if (err) {
+              console.error("Failed to delete category:", err);
+            } else {
+              console.log("Category deleted, status:", res.status);
+            }
+          }
+        );
+      }
+    language: text/javascript
+  - type: afterResponse
+    code: |-
+      pm.test("Status is 404 Not Found", function () {
+        pm.response.to.have.status(404);
+      });
+
+      // Clean up categoryId since the resource is gone
+      pm.environment.unset("categoryId");
+    language: text/javascript
+order: 6000

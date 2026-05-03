@@ -1,0 +1,21 @@
+name: Local
+values:
+  - key: baseUrl
+    enabled: true
+    value: 'http://localhost:5120'
+    
+  - key: productId
+    enabled: true
+    value: '1'
+
+  - key: categoryId
+    enabled: true
+    value: '1'
+
+  - key: promotionId
+    enabled: true
+    value: '1'
+
+  - key: cartItemId
+    enabled: true
+    value: '1'

@@ -1,0 +1,52 @@
+$kind: http-request
+url: "{{baseUrl}}/api/promotion/{{deletePromotionId}}"
+method: DELETE
+headers:
+  Accept: application/json
+scripts:
+  - type: beforeRequest
+    code: |-
+      // Create a placeholder promotion to delete, so seeded data is never destroyed
+      const baseUrl = pm.environment.get("baseUrl");
+      pm.sendRequest(
+        {
+          url: baseUrl + "/api/promotion",
+          method: "POST",
+          header: { "Content-Type": "application/json" },
+          body: {
+            mode: "raw",
+            raw: JSON.stringify({
+              name: "Placeholder Promotion (to be deleted)",
+              type: 0,
+              threshold: 1,
+              reward: 0,
+              rewardValue: 1,
+              isActive: false
+            })
+          }
+        },
+        function (err, res) {
+          if (err) {
+            console.error("Failed to create placeholder promotion:", err);
+          } else {
+            const created = res.json();
+            pm.environment.set("deletePromotionId", created.id);
+            console.log("Placeholder promotion created with ID:", created.id);
+          }
+        }
+      );
+    language: text/javascript
+  - type: afterResponse
+    code: |-
+      pm.test("Status is 204 No Content", function () {
+        pm.response.to.have.status(204);
+      });
+
+      pm.test("Response body is empty", function () {
+        pm.expect(pm.response.text()).to.be.empty;
+      });
+
+      // Clean up the temporary variable
+      pm.environment.unset("deletePromotionId");
+    language: text/javascript
+order: 5000
