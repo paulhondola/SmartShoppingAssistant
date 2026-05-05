@@ -1,16 +1,37 @@
 using SmartShoppingAssistantBackend.BusinessLogic.DTOs.Cart;
+using SmartShoppingAssistantBackend.BusinessLogic.DTOs.Products;
 using SmartShoppingAssistantBackend.BusinessLogic.Services.Interfaces;
 using SmartShoppingAssistantBackend.DataAccess.Entities;
+using SmartShoppingAssistantBackend.DataAccess.Entities.Enums;
 using SmartShoppingAssistantBackend.DataAccess.Repositories.Interfaces;
 
 namespace SmartShoppingAssistantBackend.BusinessLogic.Services;
 
-public class CartService(IRepository<Cart> cartRepository, IRepository<Product> productRepository) : ICartService
+public class CartService(
+    IRepository<Cart> cartRepository,
+    IRepository<Product> productRepository,
+    IRepository<Promotion> promotionRepository) : ICartService
 {
-    public async Task<List<CartGetDto>> GetCartAsync()
+    public async Task<CartSummaryDto> GetCartAsync()
     {
         var items = await cartRepository.GetAllAsync();
-        return items.Select(MapToDto).ToList();
+        var activePromotions = (await promotionRepository.GetAllAsync())
+            .Where(p => p.IsActive)
+            .ToList();
+
+        var cartItemsDto = MapToCartItemDtos(items);
+        var subtotal = cartItemsDto.Sum(i => i.LineTotal);
+
+        var totalDiscount = CalculateItemDiscounts(items, activePromotions);
+        totalDiscount += CalculateCartWideDiscounts(items, activePromotions, subtotal);
+
+        return new CartSummaryDto
+        {
+            Items = cartItemsDto,
+            Subtotal = subtotal,
+            TotalDiscount = totalDiscount,
+            FinalPrice = subtotal - totalDiscount
+        };
     }
 
     public async Task<CartGetDto> AddItemToCartAsync(CartCreateDto cartCreateDto)
@@ -73,12 +94,97 @@ public class CartService(IRepository<Cart> cartRepository, IRepository<Product> 
             await cartRepository.DeleteAsync(item);
     }
 
+    private static List<CartItemDto> MapToCartItemDtos(List<Cart> items)
+    {
+        return items.Select(item => new CartItemDto
+        {
+            Id = item.Id,
+            ProductId = item.ProductId,
+            ProductName = item.Product.Name,
+            Description = item.Product.Description ?? string.Empty,
+            ImageUrl = item.Product.ImageUrl ?? string.Empty,
+            Quantity = item.Quantity,
+            UnitPrice = item.Product.Price,
+            LineTotal = item.Quantity * item.Product.Price
+        }).ToList();
+    }
+
+    private decimal CalculateItemDiscounts(List<Cart> items, List<Promotion> activePromotions)
+    {
+        var totalDiscount = 0m;
+
+        foreach (var item in items)
+        {
+            var itemSubtotal = item.Quantity * item.Product.Price;
+
+            // Quantity-triggered promotions for this product/category
+            var quantityPromos = activePromotions.Where(p =>
+                IsApplicableToItem(p, item) &&
+                p.Type == PromotionType.Quantity &&
+                item.Quantity >= p.Threshold);
+
+            totalDiscount += quantityPromos.Sum(promo =>
+                CalculateDiscount(promo, item.Quantity, item.Product.Price));
+
+            // CartTotal-triggered promotions scoped to this product/category
+            var scopedTotalPromos = activePromotions.Where(p =>
+                IsApplicableToItem(p, item) &&
+                p.Type == PromotionType.CartTotal &&
+                itemSubtotal >= p.Threshold);
+
+            totalDiscount += scopedTotalPromos.Sum(promo =>
+                CalculateDiscount(promo, item.Quantity, item.Product.Price, itemSubtotal));
+        }
+
+        return totalDiscount;
+    }
+
+    private decimal CalculateCartWideDiscounts(List<Cart> items, List<Promotion> activePromotions, decimal subtotal)
+    {
+        var totalQuantity = items.Sum(i => i.Quantity);
+        var cartWidePromos = activePromotions.Where(p =>
+            p.ProductId == null && p.CategoryId == null &&
+            ((p.Type == PromotionType.CartTotal && subtotal >= p.Threshold) ||
+             (p.Type == PromotionType.Quantity && totalQuantity >= p.Threshold)));
+
+        return cartWidePromos.Sum(promo => CalculateDiscount(promo, totalQuantity, 0, subtotal));
+    }
+
+    private static bool IsApplicableToItem(Promotion promo, Cart item)
+    {
+        return promo.ProductId == item.ProductId ||
+               (promo.CategoryId != null && item.Product.Categories.Any(c => c.Id == promo.CategoryId));
+    }
+
+    private static decimal CalculateDiscount(Promotion promo, int quantity, decimal unitPrice, decimal totalAmount = 0)
+    {
+        if (promo.Reward == PromotionReward.PercentDiscount)
+        {
+            var baseAmount = promo.Type == PromotionType.CartTotal ? totalAmount : quantity * unitPrice;
+            return baseAmount * (promo.RewardValue / 100m);
+        }
+
+        if (promo.Reward == PromotionReward.FreeItems)
+            // For free items, we assume the discount is equivalent to the price of 'RewardValue' items
+            // This usually applies to Quantity based promos
+            return promo.RewardValue * unitPrice;
+
+        return 0;
+    }
+
     private static CartGetDto MapToDto(Cart cart)
     {
         return new CartGetDto
         {
             Id = cart.Id,
-            ProductId = cart.ProductId,
+            Product = new ProductGetDto
+            {
+                Id = cart.Product.Id,
+                Name = cart.Product.Name,
+                Description = cart.Product.Description ?? string.Empty,
+                Price = cart.Product.Price,
+                ImageUrl = cart.Product.ImageUrl
+            },
             Quantity = cart.Quantity
         };
     }

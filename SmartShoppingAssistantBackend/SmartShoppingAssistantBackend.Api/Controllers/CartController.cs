@@ -9,10 +9,10 @@ namespace SmartShoppingAssistantBackend.Controllers;
 public class CartController(ICartService cartService) : ControllerBase
 {
     [HttpGet]
-    public async Task<IActionResult> GetCart()
+    public async Task<ActionResult<CartSummaryDto>> GetCart()
     {
-        var cartItems = await cartService.GetCartAsync();
-        return Ok(cartItems);
+        var cartSummary = await cartService.GetCartAsync();
+        return Ok(cartSummary);
     }
 
     [HttpPost("items")]

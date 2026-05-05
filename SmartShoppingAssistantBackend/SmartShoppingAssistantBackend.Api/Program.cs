@@ -25,7 +25,7 @@ builder.Services.AddScoped<IRepository<Promotion>, BaseRepository<Promotion>>();
 builder.Services.AddScoped<IPromotionService, PromotionService>();
 
 // Cart
-builder.Services.AddScoped<IRepository<Cart>, BaseRepository<Cart>>();
+builder.Services.AddScoped<IRepository<Cart>, CartRepository>();
 builder.Services.AddScoped<ICartService, CartService>();
 
 builder.Services.AddDbContext<SmartShoppingAssistantDbContext>(options =>
