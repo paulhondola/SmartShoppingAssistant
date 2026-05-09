@@ -1,74 +1,69 @@
+using Logic.DTOs.Cart;
+using Logic.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Backend.BusinessLogic.DTOs.Cart;
-using Backend.BusinessLogic.Services.Interfaces;
 
-namespace Backend.Controllers;
+namespace Api.Controllers;
 
-[Route("api/[controller]")]
+[Route("api/cart")]
 [ApiController]
 public class CartController(ICartService cartService) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<CartSummaryDto>> GetCart()
+    public async Task<ActionResult<CartGetDto>> GetCart()
     {
-        var cartSummary = await cartService.GetCartAsync();
-        return Ok(cartSummary);
+        var cart = await cartService.GetCartAsync();
+        return Ok(cart);
     }
 
     [HttpPost("items")]
-    public async Task<IActionResult> AddItem([FromBody] CartCreateDto dto)
+    public async Task<ActionResult<CartItemGetDto>> AddItem([FromBody] AddCartItemDto dto)
     {
         try
         {
-            var cartItem = await cartService.AddItemToCartAsync(dto);
-            return Ok(cartItem);
+            var item = await cartService.AddItemAsync(dto);
+            return Ok(item);
         }
-        catch (ArgumentOutOfRangeException ex)
+        catch (Exception ex)
         {
-            return BadRequest(ex.Message);
-        }
-        catch (KeyNotFoundException)
-        {
-            return NotFound();
+            return NotFound(ex.Message);
         }
     }
 
-    [HttpPut("items/{itemId:int}")]
-    public async Task<IActionResult> UpdateItemQuantity(int itemId, [FromBody] CartUpdateDto dto)
+    [HttpPut("items/{itemId}")]
+    public async Task<ActionResult<CartItemGetDto>> UpdateItem(
+        int itemId,
+        [FromBody] UpdateCartItemDto dto
+    )
     {
         try
         {
-            var updatedCartItem = await cartService.UpdateCartItemQuantityAsync(itemId, dto);
-            return Ok(updatedCartItem);
+            var item = await cartService.UpdateItemAsync(itemId, dto);
+            return Ok(item);
         }
-        catch (ArgumentOutOfRangeException ex)
+        catch (Exception ex)
         {
-            return BadRequest(ex.Message);
-        }
-        catch (KeyNotFoundException)
-        {
-            return NotFound();
+            return NotFound(ex.Message);
         }
     }
 
-    [HttpDelete("items/{itemId:int}")]
-    public async Task<IActionResult> DeleteItem(int itemId)
+    [HttpDelete("items/{itemId}")]
+    public async Task<IActionResult> RemoveItem(int itemId)
     {
         try
         {
-            await cartService.DeleteCartItemAsync(itemId);
+            await cartService.RemoveItemAsync(itemId);
             return NoContent();
         }
-        catch (KeyNotFoundException)
+        catch (Exception ex)
         {
-            return NotFound();
+            return NotFound(ex.Message);
         }
     }
 
     [HttpDelete]
-    public async Task<IActionResult> ResetCart()
+    public async Task<IActionResult> ClearCart()
     {
-        await cartService.DeleteCartAsync();
+        await cartService.ClearCartAsync();
         return NoContent();
     }
 }

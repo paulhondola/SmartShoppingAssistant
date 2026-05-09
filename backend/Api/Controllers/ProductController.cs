@@ -1,66 +1,71 @@
+using Logic.DTOs.Products;
+using Logic.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Backend.BusinessLogic.DTOs.Products;
-using Backend.BusinessLogic.Services.Interfaces;
 
-namespace Backend.Controllers;
+namespace Api.Controllers;
 
-[Route("api/[controller]")]
+[Route("api/product")]
 [ApiController]
 public class ProductController(IProductService productService) : ControllerBase
 {
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<ActionResult<List<ProductGetDto>>> GetAll(
+        [FromQuery] int? categoryId,
+        [FromQuery] string? name,
+        [FromQuery] decimal? minPrice,
+        [FromQuery] decimal? maxPrice
+    )
     {
-        var products = await productService.GetAllProductsAsync();
+        var products = await productService.GetAllAsync(categoryId, name, minPrice, maxPrice);
         return Ok(products);
     }
 
-    [HttpGet("{id:int}")]
-    public async Task<IActionResult> GetById(int id)
+    [HttpGet("{id}")]
+    public async Task<ActionResult<ProductGetDto>> GetById(int id)
     {
         try
         {
-            var product = await productService.GetProductByIdAsync(id);
+            var product = await productService.GetByIdAsync(id);
             return Ok(product);
         }
-        catch (KeyNotFoundException)
+        catch (Exception ex)
         {
-            return NotFound();
+            return NotFound(ex.Message);
         }
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] ProductCreateDto dto)
+    public async Task<ActionResult<ProductGetDto>> Create([FromBody] ProductCreateDto dto)
     {
-        var created = await productService.AddProductAsync(dto);
-        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+        var product = await productService.CreateAsync(dto);
+        return CreatedAtAction(nameof(GetById), new { id = product.Id }, product);
     }
 
-    [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(int id, [FromBody] ProductUpdateDto dto)
+    [HttpPut("{id}")]
+    public async Task<ActionResult<ProductGetDto>> Update(int id, [FromBody] ProductUpdateDto dto)
     {
         try
         {
-            var updated = await productService.UpdateProductAsync(id, dto);
-            return Ok(updated);
+            var product = await productService.UpdateAsync(id, dto);
+            return Ok(product);
         }
-        catch (KeyNotFoundException)
+        catch (Exception ex)
         {
-            return NotFound();
+            return NotFound(ex.Message);
         }
     }
 
-    [HttpDelete("{id:int}")]
+    [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
         try
         {
-            await productService.DeleteProductAsync(id);
+            await productService.DeleteAsync(id);
             return NoContent();
         }
-        catch (KeyNotFoundException)
+        catch (Exception ex)
         {
-            return NotFound();
+            return NotFound(ex.Message);
         }
     }
 }

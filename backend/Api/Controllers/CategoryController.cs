@@ -1,66 +1,66 @@
+using Logic.DTOs.Categories;
+using Logic.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Backend.BusinessLogic.DTOs.Categories;
-using Backend.BusinessLogic.Services.Interfaces;
 
-namespace Backend.Controllers;
+namespace Api.Controllers;
 
-[Route("api/[controller]")]
+[Route("api/category")]
 [ApiController]
 public class CategoryController(ICategoryService categoryService) : ControllerBase
 {
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<ActionResult<List<CategoryGetDto>>> GetAll()
     {
-        var categories = await categoryService.GetAllCategoriesAsync();
+        var categories = await categoryService.GetAllAsync();
         return Ok(categories);
     }
 
-    [HttpGet("{id:int}")]
-    public async Task<IActionResult> GetById(int id)
+    [HttpGet("{id}")]
+    public async Task<ActionResult<CategoryGetDto>> GetById(int id)
     {
         try
         {
-            var category = await categoryService.GetCategoryByIdAsync(id);
+            var category = await categoryService.GetByIdAsync(id);
             return Ok(category);
         }
-        catch (KeyNotFoundException)
+        catch (Exception ex)
         {
-            return NotFound();
+            return NotFound(ex.Message);
         }
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CategoryCreateDto dto)
+    public async Task<ActionResult<CategoryGetDto>> Create([FromBody] CategoryCreateDto dto)
     {
-        var created = await categoryService.AddCategoryAsync(dto);
-        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+        var category = await categoryService.CreateAsync(dto);
+        return CreatedAtAction(nameof(GetById), new { id = category.Id }, category);
     }
 
-    [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(int id, [FromBody] CategoryUpdateDto dto)
+    [HttpPut("{id}")]
+    public async Task<ActionResult<CategoryGetDto>> Update(int id, [FromBody] CategoryUpdateDto dto)
     {
         try
         {
-            var updated = await categoryService.UpdateCategoryAsync(id, dto);
-            return Ok(updated);
+            var category = await categoryService.UpdateAsync(id, dto);
+            return Ok(category);
         }
-        catch (KeyNotFoundException)
+        catch (Exception ex)
         {
-            return NotFound();
+            return NotFound(ex.Message);
         }
     }
 
-    [HttpDelete("{id:int}")]
+    [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
         try
         {
-            await categoryService.DeleteCategoryAsync(id);
+            await categoryService.DeleteAsync(id);
             return NoContent();
         }
-        catch (KeyNotFoundException)
+        catch (Exception ex)
         {
-            return NotFound();
+            return NotFound(ex.Message);
         }
     }
 }

@@ -8,5 +8,3 @@ values:
     value: '1'
   - key: promotionId
     value: '1'
-  - key: cartItemId
-    value: '1'

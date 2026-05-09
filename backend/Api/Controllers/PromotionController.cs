@@ -1,66 +1,69 @@
+using Logic.DTOs.Promotions;
+using Logic.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Backend.BusinessLogic.DTOs.Promotions;
-using Backend.BusinessLogic.Services.Interfaces;
 
-namespace Backend.Controllers;
+namespace Api.Controllers;
 
-[Route("api/[controller]")]
+[Route("api/promotion")]
 [ApiController]
 public class PromotionController(IPromotionService promotionService) : ControllerBase
 {
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<ActionResult<List<PromotionGetDto>>> GetAll()
     {
-        var promotions = await promotionService.GetAllPromotionsAsync();
+        var promotions = await promotionService.GetAllAsync();
         return Ok(promotions);
     }
 
-    [HttpGet("{id:int}")]
-    public async Task<IActionResult> GetById(int id)
+    [HttpGet("{id}")]
+    public async Task<ActionResult<PromotionGetDto>> GetById(int id)
     {
         try
         {
-            var promotion = await promotionService.GetPromotionByIdAsync(id);
+            var promotion = await promotionService.GetByIdAsync(id);
             return Ok(promotion);
         }
-        catch (KeyNotFoundException)
+        catch (Exception ex)
         {
-            return NotFound();
+            return NotFound(ex.Message);
         }
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] PromotionCreateDto dto)
+    public async Task<ActionResult<PromotionGetDto>> Create([FromBody] PromotionCreateDto dto)
     {
-        var created = await promotionService.AddPromotionAsync(dto);
-        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+        var promotion = await promotionService.CreateAsync(dto);
+        return CreatedAtAction(nameof(GetById), new { id = promotion.Id }, promotion);
     }
 
-    [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(int id, [FromBody] PromotionUpdateDto dto)
+    [HttpPut("{id}")]
+    public async Task<ActionResult<PromotionGetDto>> Update(
+        int id,
+        [FromBody] PromotionUpdateDto dto
+    )
     {
         try
         {
-            var updated = await promotionService.UpdatePromotionAsync(id, dto);
-            return Ok(updated);
+            var promotion = await promotionService.UpdateAsync(id, dto);
+            return Ok(promotion);
         }
-        catch (KeyNotFoundException)
+        catch (Exception ex)
         {
-            return NotFound();
+            return NotFound(ex.Message);
         }
     }
 
-    [HttpDelete("{id:int}")]
+    [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
         try
         {
-            await promotionService.DeletePromotionAsync(id);
+            await promotionService.DeleteAsync(id);
             return NoContent();
         }
-        catch (KeyNotFoundException)
+        catch (Exception ex)
         {
-            return NotFound();
+            return NotFound(ex.Message);
         }
     }
 }
