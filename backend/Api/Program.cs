@@ -1,3 +1,4 @@
+using Api.Options;
 using Data;
 using Data.Repositories;
 using Data.Repositories.Interfaces;
@@ -37,23 +38,28 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IPromotionService, PromotionService>();
 builder.Services.AddScoped<ICartService, CartService>();
 
-/*
-var openAiApiKey =
-    builder.Configuration["OpenAI:ApiKey"]
-    ?? throw new InvalidOperationException("OpenAI:ApiKey is not configured.");
-var openAiModel = builder.Configuration["OpenAI:ModelId"] ?? "gpt-4o";
+var openAi = builder.Configuration.GetSection(OpenAiOptions.SectionName).Get<OpenAiOptions>()
+    ?? new OpenAiOptions();
 
-builder.Services.AddSingleton<IChatClient>(
-    new OpenAIClient(openAiApiKey)
-        .GetChatClient(openAiModel)
-        .AsIChatClient()
-        .AsBuilder()
-        .UseFunctionInvocation()
-        .Build()
+builder.Services.Configure<OpenAiOptions>(
+    builder.Configuration.GetSection(OpenAiOptions.SectionName)
 );
 
-builder.Services.AddScoped<IPromotionCheckerAgent, PromotionCheckerAgent>();
-*/
+if (openAi.IsConfigured)
+{
+    builder.Services.AddSingleton<IChatClient>(
+        new OpenAIClient(openAi.ApiKey!)
+            .GetChatClient(openAi.ModelId)
+            .AsIChatClient()
+            .AsBuilder()
+            .UseFunctionInvocation()
+            .Build()
+    );
+
+    builder.Services.AddScoped<IPromotionCheckerAgent, PromotionCheckerAgent>();
+    builder.Services.AddScoped<ISuggestionComposerAgent, SuggestionComposerAgent>();
+    builder.Services.AddScoped<IAnalysisService, AnalysisService>();
+}
 
 var app = builder.Build();
 

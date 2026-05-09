@@ -4,14 +4,14 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
-[Route("api/promotion")]
+[Route("api/promotions")]
 [ApiController]
 public class PromotionController(IPromotionService promotionService) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<List<PromotionGetDto>>> GetAll()
+    public async Task<ActionResult<List<PromotionGetDto>>> GetAll([FromQuery] bool? activeOnly)
     {
-        var promotions = await promotionService.GetAllAsync();
+        var promotions = await promotionService.GetAllAsync(activeOnly);
         return Ok(promotions);
     }
 

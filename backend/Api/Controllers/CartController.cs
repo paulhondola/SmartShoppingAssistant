@@ -1,4 +1,5 @@
 using Logic.DTOs.Cart;
+using Logic.Models;
 using Logic.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,7 +7,8 @@ namespace Api.Controllers;
 
 [Route("api/cart")]
 [ApiController]
-public class CartController(ICartService cartService) : ControllerBase
+public class CartController(ICartService cartService, IAnalysisService? analysisService = null)
+    : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<CartGetDto>> GetCart()
@@ -65,5 +67,15 @@ public class CartController(ICartService cartService) : ControllerBase
     {
         await cartService.ClearCartAsync();
         return NoContent();
+    }
+
+    [HttpGet("analysis")]
+    public async Task<ActionResult<CartAnalysisResponse>> GetAnalysis()
+    {
+        if (analysisService is null)
+            return StatusCode(503, "AI analysis is not configured. Set OpenAI:ApiKey to enable.");
+
+        var result = await analysisService.AnalyzeCartAsync();
+        return Ok(result);
     }
 }

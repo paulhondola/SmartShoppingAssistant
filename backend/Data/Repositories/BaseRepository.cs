@@ -1,7 +1,6 @@
 using Data.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-
 namespace Data.Repositories;
 
 public class BaseRepository<TEntity>(SmartShoppingAssistantDbContext context) : IRepository<TEntity>

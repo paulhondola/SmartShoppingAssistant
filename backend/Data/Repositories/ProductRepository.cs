@@ -1,6 +1,6 @@
+using Data.Entities;
 using Data.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Data.Entities;
 
 namespace Data.Repositories;
 

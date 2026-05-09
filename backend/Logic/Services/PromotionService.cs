@@ -7,10 +7,18 @@ namespace Logic.Services;
 
 public class PromotionService(IPromotionRepository promotionRepository) : IPromotionService
 {
-    public async Task<List<PromotionGetDto>> GetAllAsync()
+    public async Task<List<PromotionGetDto>> GetAllAsync(bool? activeOnly = null)
     {
         var promotions = await promotionRepository.GetAllAsync();
+        if (activeOnly == true)
+            promotions = promotions.Where(p => p.IsActive).ToList();
         return promotions.Select(MapToDto).ToList();
+    }
+
+    public async Task<List<PromotionGetDto>> GetAllActiveAsync()
+    {
+        var promotions = await promotionRepository.GetAllAsync();
+        return promotions.Where(p => p.IsActive).Select(MapToDto).ToList();
     }
 
     public async Task<PromotionGetDto> GetByIdAsync(int id)

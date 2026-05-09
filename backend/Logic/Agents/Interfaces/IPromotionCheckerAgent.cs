@@ -1,8 +1,8 @@
-using Microsoft.Agents.AI;
+using Logic.Models;
 
 namespace Logic.Agents.Interfaces;
 
 public interface IPromotionCheckerAgent
 {
-    ChatClientAgent Build(string cartJson);
+    Task<PromotionAnalysis> AnalyzeAsync(string cartJson);
 }

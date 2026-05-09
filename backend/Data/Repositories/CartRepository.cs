@@ -1,5 +1,5 @@
-using Data.Repositories.Interfaces;
 using Data.Entities;
+using Data.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Data.Repositories;
@@ -8,7 +8,8 @@ public class CartRepository(SmartShoppingAssistantDbContext context)
     : BaseRepository<Cart>(context),
         ICartRepository
 {
-    private IQueryable<Cart> WithProduct() => GetAllAsQueryable().Include(ci => ci.Product);
+    private IQueryable<Cart> WithProduct() =>
+        GetAllAsQueryable().Include(ci => ci.Product).ThenInclude(p => p.Categories);
 
     public async Task<List<Cart>> GetAllWithProductAsync()
     {
