@@ -1,4 +1,5 @@
 $kind: http-request
+name: Add Item to Cart
 url: "{{baseUrl}}/api/cart/items"
 method: POST
 headers:
@@ -8,8 +9,8 @@ body:
   type: json
   content: |
     {
-      "productId": {{productId}},
-      "quantity": 1
+      "productId": 37,
+      "quantity": 3
     }
 scripts:
   - type: afterResponse
