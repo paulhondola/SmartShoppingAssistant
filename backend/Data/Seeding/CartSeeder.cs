@@ -33,6 +33,10 @@ public class CartSeeder : IEntitySeeder
             new() { ProductId = prods["Corsair K100 RGB Mechanical"].Id, Quantity = 1 },
             new() { ProductId = prods["Razer DeathAdder V3 Pro"].Id, Quantity = 1 },
             new() { ProductId = prods["SteelSeries Arctis Nova Pro Wireless"].Id, Quantity = 1 },
+            new() { ProductId = prods["Razer Kiyo Pro Streaming Camera"].Id, Quantity = 1 },
+            new() { ProductId = prods["HyperX QuadCast S USB Microphone"].Id, Quantity = 1 },
+            new() { ProductId = prods["Meta Quest 3 256GB VR Headset"].Id, Quantity = 1 },
+            new() { ProductId = prods["Elgato Cam Link 4K Capture Device"].Id, Quantity = 1 },
         };
 
         await context.Cart.AddRangeAsync(cartItems);

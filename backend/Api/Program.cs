@@ -47,7 +47,7 @@ builder.Services.Configure<OpenAiOptions>(
 
 if (openAi.IsConfigured)
 {
-    builder.Services.AddSingleton<IChatClient>(
+    builder.Services.AddSingleton(
         new OpenAIClient(openAi.ApiKey!)
             .GetChatClient(openAi.ModelId)
             .AsIChatClient()

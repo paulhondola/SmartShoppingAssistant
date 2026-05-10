@@ -83,6 +83,46 @@ public class CategorySeeder : IEntitySeeder
                 Name = "Gaming",
                 Description = "Products optimised for gaming performance and aesthetics.",
             },
+            new()
+            {
+                Name = "Webcams",
+                Description = "High-definition webcams for streaming, video conferencing, and content creation with advanced autofocus and low-light performance.",
+            },
+            new()
+            {
+                Name = "Microphones",
+                Description = "Professional and consumer-grade microphones including USB, XLR, and wireless options for streaming, podcasting, and recording.",
+            },
+            new()
+            {
+                Name = "Speakers",
+                Description = "Computer speakers ranging from compact desktop models to high-fidelity stereo systems with Bluetooth and surround sound capabilities.",
+            },
+            new()
+            {
+                Name = "UPS / Battery Backup",
+                Description = "Uninterruptible power supplies and battery backup systems to protect equipment and ensure continuous operation during power outages.",
+            },
+            new()
+            {
+                Name = "VR Headsets",
+                Description = "Virtual reality headsets for immersive gaming and entertainment compatible with PC platforms.",
+            },
+            new()
+            {
+                Name = "Controllers",
+                Description = "Wireless and wired controllers including Xbox, PlayStation, and specialty gaming controllers for PC gaming.",
+            },
+            new()
+            {
+                Name = "Streaming Equipment",
+                Description = "Professional-grade equipment for content creators including capture cards, stream decks, and lighting solutions.",
+            },
+            new()
+            {
+                Name = "Tablets",
+                Description = "Android and iOS tablets for productivity, creative work, and entertainment across all price tiers.",
+            },
         };
 
         await context.Categories.AddRangeAsync(categories);

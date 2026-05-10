@@ -331,6 +331,186 @@ public class ProductSeeder : IEntitySeeder
                 ImageUrl = "https://placehold.co/400x400?text=ROG+GT-BE98",
                 Categories = [cats["Networking"], cats["Gaming"]],
             },
+            // ── Webcams ──────────────────────────────────────────────────────
+            new()
+            {
+                Name = "Logitech C920 Pro HD Webcam",
+                Description =
+                    "1080p30fps or 720p60fps USB webcam with auto-focus and stereo microphones for professional streaming.",
+                Price = 89.99m,
+                ImageUrl = "https://placehold.co/400x400?text=Logitech+C920",
+                Categories = [cats["Webcams"]],
+            },
+            new()
+            {
+                Name = "Razer Kiyo Pro Streaming Camera",
+                Description =
+                    "1080p60fps HDR USB camera with auto-focusing and low-light correction optimized for content creators.",
+                Price = 199.99m,
+                ImageUrl = "https://placehold.co/400x400?text=Razer+Kiyo+Pro",
+                Categories = [cats["Webcams"], cats["Gaming"]],
+            },
+            // ── Microphones ──────────────────────────────────────────────────
+            new()
+            {
+                Name = "Audio-Technica AT2020 Condenser Microphone",
+                Description =
+                    "Cardioid side-address condenser microphone with XLR connection ideal for podcasting and studio recording.",
+                Price = 99.99m,
+                ImageUrl = "https://placehold.co/400x400?text=Audio-Technica+AT2020",
+                Categories = [cats["Microphones"]],
+            },
+            new()
+            {
+                Name = "HyperX QuadCast S USB Microphone",
+                Description =
+                    "4-pattern condenser USB microphone with tap-to-mute, auto-gain, and shock mount for streaming and gaming.",
+                Price = 139.99m,
+                ImageUrl = "https://placehold.co/400x400?text=HyperX+QuadCast+S",
+                Categories = [cats["Microphones"], cats["Gaming"]],
+            },
+            // ── Speakers ─────────────────────────────────────────────────────
+            new()
+            {
+                Name = "Edifier R1700BT Bluetooth Speakers",
+                Description =
+                    "55W powered bookshelf speakers with Bluetooth 5.0, auxiliary input, and wood cabinet design.",
+                Price = 119.99m,
+                ImageUrl = "https://placehold.co/400x400?text=Edifier+R1700BT",
+                Categories = [cats["Speakers"]],
+            },
+            new()
+            {
+                Name = "Corsair SP2500 Gaming Speakers",
+                Description =
+                    "120W 2.1 powered stereo speaker system with subwoofer, 3.5mm/RCA inputs, and RGB lighting.",
+                Price = 279.99m,
+                ImageUrl = "https://placehold.co/400x400?text=Corsair+SP2500",
+                Categories = [cats["Speakers"], cats["Gaming"]],
+            },
+            // ── UPS / Battery Backup ─────────────────────────────────────────
+            new()
+            {
+                Name = "APC Back-UPS 600VA",
+                Description =
+                    "600VA/330W battery backup with 6 surge-protected outlets and 25-minute runtime on half load.",
+                Price = 79.99m,
+                ImageUrl = "https://placehold.co/400x400?text=APC+600VA",
+                Categories = [cats["UPS / Battery Backup"]],
+            },
+            new()
+            {
+                Name = "CyberPower CP1350PFCLCD Smart UPS",
+                Description =
+                    "1350VA/810W line-interactive UPS with LCD display, 8 outlets, and USB/serial monitoring capability.",
+                Price = 179.99m,
+                ImageUrl = "https://placehold.co/400x400?text=CyberPower+1350VA",
+                Categories = [cats["UPS / Battery Backup"]],
+            },
+            // ── VR Headsets ──────────────────────────────────────────────────
+            new()
+            {
+                Name = "Meta Quest 3 256GB VR Headset",
+                Description =
+                    "Standalone VR headset with 4K display, color passthrough, and built-in dual controllers for immersive gaming.",
+                Price = 499.99m,
+                ImageUrl = "https://placehold.co/400x400?text=Meta+Quest+3",
+                Categories = [cats["VR Headsets"], cats["Gaming"]],
+            },
+            new()
+            {
+                Name = "HTC Vive XR Elite All-in-One Headset",
+                Description =
+                    "High-end standalone XR headset with dual OLED displays, eye tracking, and PC VR capability via tethering.",
+                Price = 1299.99m,
+                ImageUrl = "https://placehold.co/400x400?text=HTC+Vive+Elite",
+                Categories = [cats["VR Headsets"], cats["Gaming"]],
+            },
+            // ── Controllers ──────────────────────────────────────────────────
+            new()
+            {
+                Name = "8BitDo Pro 2 Wireless Controller",
+                Description =
+                    "Multi-platform wireless controller with Hall Effect sticks, turbo mode, and connectivity for Switch/PC/mobile.",
+                Price = 69.99m,
+                ImageUrl = "https://placehold.co/400x400?text=8BitDo+Pro+2",
+                Categories = [cats["Controllers"], cats["Gaming"]],
+            },
+            new()
+            {
+                Name = "Xbox Series X|S Wireless Controller",
+                Description =
+                    "Premium wireless gamepad with impulse triggers, textured grips, and button remapping support via Xbox app.",
+                Price = 74.99m,
+                ImageUrl = "https://placehold.co/400x400?text=Xbox+Series+Controller",
+                Categories = [cats["Controllers"], cats["Gaming"]],
+            },
+            // ── Streaming Equipment ──────────────────────────────────────────
+            new()
+            {
+                Name = "Elgato Cam Link 4K Capture Device",
+                Description =
+                    "HDMI video capture device for streaming cameras via USB 3.0 with 4K30 or 1080p60 passthrough.",
+                Price = 149.99m,
+                ImageUrl = "https://placehold.co/400x400?text=Elgato+CamLink+4K",
+                Categories = [cats["Streaming Equipment"], cats["Gaming"]],
+            },
+            new()
+            {
+                Name = "Rode Wireless GO II Microphone System",
+                Description =
+                    "Compact dual-channel wireless microphone system with 200m range and integrated 2-hour battery per pack.",
+                Price = 329.99m,
+                ImageUrl = "https://placehold.co/400x400?text=Rode+Wireless+GO",
+                Categories = [cats["Streaming Equipment"]],
+            },
+            // ── Tablets ──────────────────────────────────────────────────────
+            new()
+            {
+                Name = "iPad Pro 12.9\" M2 256GB",
+                Description =
+                    "12.9-inch OLED display with Apple M2 chip, 120Hz ProMotion, and MagSafe charging for content creation.",
+                Price = 1199.99m,
+                ImageUrl = "https://placehold.co/400x400?text=iPad+Pro+12.9",
+                Categories = [cats["Tablets"]],
+            },
+            new()
+            {
+                Name = "Samsung Galaxy Tab S9 Ultra 256GB",
+                Description =
+                    "14.6-inch AMOLED display with Snapdragon 8 Gen 2, 120Hz refresh, and S Pen included for productivity.",
+                Price = 1099.99m,
+                ImageUrl = "https://placehold.co/400x400?text=Samsung+Tab+S9",
+                Categories = [cats["Tablets"]],
+            },
+            // ── Budget / Mid-range additions ─────────────────────────────────
+            new()
+            {
+                Name = "NVIDIA GeForce RTX 4060 8GB",
+                Description =
+                    "Entry-level ray tracing GPU with 3072 CUDA cores, PCIe 4.0, and 128-bit memory bus for 1080p gaming.",
+                Price = 299.99m,
+                ImageUrl = "https://placehold.co/400x400?text=RTX+4060",
+                Categories = [cats["Graphics Cards"], cats["Gaming"]],
+            },
+            new()
+            {
+                Name = "Samsung 870 QVO 1TB SATA SSD",
+                Description =
+                    "Budget-friendly 1TB 2.5-inch SATA SSD with 560MB/s sequential read and 5-year warranty.",
+                Price = 79.99m,
+                ImageUrl = "https://placehold.co/400x400?text=Samsung+870+QVO",
+                Categories = [cats["Storage"]],
+            },
+            new()
+            {
+                Name = "G.Skill Trident Z5 RGB 32GB (2x16GB) DDR5 6000MHz",
+                Description =
+                    "High-speed DDR5 memory kit with RGB lighting optimized for AMD Ryzen 7000 and Intel 13th-gen platforms.",
+                Price = 149.99m,
+                ImageUrl = "https://placehold.co/400x400?text=Trident+Z5+32GB",
+                Categories = [cats["RAM Memory"]],
+            },
         };
 
         await context.Products.AddRangeAsync(products);
