@@ -3,9 +3,9 @@ using Data.Seeding.Interfaces;
 
 namespace Data.Seeding;
 
-public class CategorySeeder : IEntitySeeder
+public class CategorySeeder(SmartShoppingAssistantDbContext context) : IEntitySeeder
 {
-    public async Task SeedAsync(SmartShoppingAssistantDbContext context)
+    public async Task SeedAsync()
     {
         if (context.Categories.Any())
             return;

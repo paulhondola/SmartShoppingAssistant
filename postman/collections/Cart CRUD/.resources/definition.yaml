@@ -1,1 +1,11 @@
 $kind: collection
+name: Cart CRUD
+order:
+  - Get All Cart Items
+  - Add Item to Cart
+  - Update Cart Item Quantity
+  - Delete Cart Item
+  - Reset Cart (Clear)
+  - Get Deleted Cart Item (404)
+  - Update Non-existent Cart Item (404)
+  - Delete Non-existent Cart Item (404)

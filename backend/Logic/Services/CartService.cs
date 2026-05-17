@@ -1,40 +1,48 @@
-using Data.Entities;
-using Data.Entities.Enums;
-using Data.Repositories.Interfaces;
-using Logic.DTOs.Cart;
-using Logic.DTOs.Promotions;
+using System.Text.Json;
+using Microsoft.Agents.AI.Workflows;
+using Microsoft.Extensions.AI;
+using Logic.Agents;
+using Logic.DTOs;
+using Logic.Models;
 using Logic.Services.Interfaces;
+using Data.Entities;
+using Data.Repositories;
+using Data.Repositories.Interfaces;
+using Logic.Agents.Interfaces;
+using Logic.DTOs.Cart;
 
 namespace Logic.Services;
 
 public class CartService(
     ICartRepository cartItemRepository,
     IProductRepository productRepository,
-    IPromotionService promotionService
+    ICategoryRepository categoryRepository,
+    IPromotionCheckerAgent promotionCheckerAgent,
+    ISuggestionComposerAgent suggestionComposerAgent
 ) : ICartService
 {
     public async Task<CartGetDto> GetCartAsync()
     {
         var items = await cartItemRepository.GetAllWithProductAsync();
-        return await BuildCartDtoAsync(items);
+        return new CartGetDto { Items = items.Select(MapToDto).ToList() };
     }
 
     public async Task<CartItemGetDto> AddItemAsync(AddCartItemDto dto)
     {
-        await productRepository.GetByIdAsync(dto.ProductId);
+        await productRepository.GetByIdAsync(dto.ProductId); // throws if not found
 
         var existing = await cartItemRepository.GetByProductIdAsync(dto.ProductId);
         if (existing != null)
         {
             existing.Quantity += dto.Quantity;
             await cartItemRepository.UpdateAsync(existing);
-            return MapToItemDto(existing);
+            return MapToDto(existing);
         }
 
         var item = new Cart { ProductId = dto.ProductId, Quantity = dto.Quantity };
         await cartItemRepository.AddAsync(item);
         var added = await cartItemRepository.GetByIdWithProductAsync(item.Id);
-        return MapToItemDto(added);
+        return MapToDto(added);
     }
 
     public async Task<CartItemGetDto> UpdateItemAsync(int itemId, UpdateCartItemDto dto)
@@ -42,91 +50,79 @@ public class CartService(
         var item = await cartItemRepository.GetByIdWithProductAsync(itemId);
         item.Quantity = dto.Quantity;
         await cartItemRepository.UpdateAsync(item);
-        return MapToItemDto(item);
+        return MapToDto(item);
     }
 
     public Task RemoveItemAsync(int itemId) => cartItemRepository.DeleteAsync(itemId);
 
     public Task ClearCartAsync() => cartItemRepository.ClearAsync();
 
-    private async Task<CartGetDto> BuildCartDtoAsync(IList<Cart> items)
+    public async Task<AnalysisResponse> AnalyzeCartAsync()
     {
-        var itemDtos = items.Select(MapToItemDto).ToList();
-        var subtotal = itemDtos.Sum(i => i.Subtotal);
+        var cart = await cartItemRepository.GetAllWithProductAsync();
+        var categories = await categoryRepository.GetAllAsync();
 
-        var applied = new List<AppliedPromotionDto>();
-        var seenPromotionIds = new HashSet<int>();
-
-        // Product/category-scoped promotions
-        foreach (var cartItem in items)
-        {
-            var promos = await promotionService.GetForProductAsync(cartItem.ProductId);
-            var itemSubtotal = cartItem.Product.Price * cartItem.Quantity;
-
-            foreach (var promo in promos)
+        var cartJson = JsonSerializer.Serialize(
+            cart.Select(c => new
             {
-                if (!seenPromotionIds.Add(promo.Id))
-                    continue;
+                c.ProductId,
+                ProductName = c.Product.Name,
+                c.Product.Price,
+                c.Quantity,
+                LineTotal = c.Product.Price * c.Quantity,
+                Categories = c
+                    .Product.Categories.Select(cat => new
+                    {
+                        CategoryId = cat.Id,
+                        CategoryName = cat.Name,
+                    })
+                    .ToList(),
+            })
+        );
 
-                var discount = CalculateDiscount(promo, cartItem.Quantity, itemSubtotal, subtotal);
-                if (discount < 0)
-                    applied.Add(new AppliedPromotionDto(promo.Name, discount));
+        var categoryJson = JsonSerializer.Serialize(
+            categories.Select(c => new { CategoryId = c.Id, CategoryName = c.Name })
+        );
+
+        var promotionAgent = promotionCheckerAgent.Build(cartJson);
+        var suggestionAgent = suggestionComposerAgent.Build(cartJson, categoryJson);
+
+        var workflow = new WorkflowBuilder(promotionAgent)
+            .AddEdge(promotionAgent, suggestionAgent)
+            .WithOutputFrom(suggestionAgent)
+            .Build();
+
+        var chatMessage = new List<ChatMessage>
+        {
+            new(ChatRole.User, "Analyze the cart and suggest improvements."),
+        };
+
+        await using var result = await InProcessExecution.RunStreamingAsync(workflow, chatMessage);
+        await result.TrySendMessageAsync(new TurnToken(emitEvents: true));
+
+        var jsonBuilder = new System.Text.StringBuilder();
+
+        await foreach (var message in result.WatchStreamAsync())
+        {
+            if (
+                message is AgentResponseUpdateEvent update
+                && update.ExecutorId.StartsWith("SuggestionComposer")
+            )
+            {
+                jsonBuilder.Append(update.Update.Text);
+            }
+            else if (message is WorkflowErrorEvent errorEvent)
+            {
+                throw new InvalidOperationException(errorEvent.Exception?.Message);
             }
         }
 
-        // Cart-wide promotions (no product, no category)
-        var cartWidePromos = await promotionService.GetAllActiveAsync();
-        foreach (var promo in cartWidePromos.Where(p => p.ProductId == null && p.CategoryId == null))
-        {
-            if (!seenPromotionIds.Add(promo.Id))
-                continue;
-
-            var discount = CalculateDiscount(promo, 0, subtotal, subtotal);
-            if (discount < 0)
-                applied.Add(new AppliedPromotionDto(promo.Name, discount));
-        }
-
-        var totalDiscount = applied.Sum(a => a.Discount);
-        return new CartGetDto
-        {
-            Items = itemDtos,
-            Subtotal = subtotal,
-            AppliedPromotions = applied,
-            TotalDiscount = totalDiscount,
-            Total = subtotal + totalDiscount,
-        };
+        var json = jsonBuilder.ToString();
+        return JsonSerializer.Deserialize<AnalysisResponse>(json)
+            ?? throw new InvalidOperationException("Failed to deserialize analysis response.");
     }
 
-    private static decimal CalculateDiscount(
-        PromotionGetDto promo,
-        int quantity,
-        decimal itemSubtotal,
-        decimal cartSubtotal
-    )
-    {
-        return promo.Type switch
-        {
-            PromotionType.Quantity when quantity >= (int)promo.Threshold =>
-                promo.Reward switch
-                {
-                    PromotionReward.FreeItems =>
-                        -(itemSubtotal / quantity * promo.RewardValue),
-                    PromotionReward.PercentDiscount =>
-                        -(itemSubtotal * promo.RewardValue / 100m),
-                    _ => 0m,
-                },
-            PromotionType.CartTotal when cartSubtotal >= promo.Threshold =>
-                promo.Reward switch
-                {
-                    PromotionReward.PercentDiscount =>
-                        -(cartSubtotal * promo.RewardValue / 100m),
-                    _ => 0m,
-                },
-            _ => 0m,
-        };
-    }
-
-    private static CartItemGetDto MapToItemDto(Cart ci) =>
+    private static CartItemGetDto MapToDto(Cart ci) =>
         new()
         {
             Id = ci.Id,
@@ -134,6 +130,5 @@ public class CartService(
             ProductName = ci.Product.Name,
             UnitPrice = ci.Product.Price,
             Quantity = ci.Quantity,
-            Subtotal = ci.Product.Price * ci.Quantity,
         };
 }

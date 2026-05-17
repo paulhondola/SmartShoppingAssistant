@@ -1,12 +1,8 @@
-using Logic.Models;
+﻿using Microsoft.Agents.AI;
 
 namespace Logic.Agents.Interfaces;
 
 public interface ISuggestionComposerAgent
 {
-    Task<SuggestionResult> ComposeAsync(
-        string cartJson,
-        string categoriesJson,
-        string promotionAnalysisJson
-    );
+    ChatClientAgent Build(string cartJson, string categoriesJson);
 }

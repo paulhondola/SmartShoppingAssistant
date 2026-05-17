@@ -1,9 +1,9 @@
-using System.ComponentModel;
-using System.Text.Json;
+﻿using System.ComponentModel;
 using Logic.Agents.Interfaces;
 using Logic.Models;
 using Logic.Services.Interfaces;
 using Logic.Tools;
+using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 
 namespace Logic.Agents;
@@ -11,56 +11,59 @@ namespace Logic.Agents;
 public class SuggestionComposerAgent(IChatClient chatClient, IProductService productService)
     : ISuggestionComposerAgent
 {
-    public async Task<SuggestionResult> ComposeAsync(
-        string cartJson,
-        string categoriesJson,
-        string promotionAnalysisJson
-    )
+    public ChatClientAgent Build(string cartJson, string categoriesJson)
     {
-        var tool = AIFunctionFactory.Create(
-            async ([Description("The category ID to search")] int categoryId) =>
-                await ShoppingTools.GetProductsByCategory(categoryId, productService),
-            "GetProductsByCategory",
-            "Get all products available in a specific category."
+        return new ChatClientAgent(
+            chatClient,
+            new ChatClientAgentOptions
+            {
+                Name = "SuggestionComposer",
+                Description = "Suggests complementary products",
+                ChatOptions = new ChatOptions
+                {
+                    Instructions =
+                        $@"
+                        You create shopping suggestions based on the promotion analysis from the
+                        previous agent and the current cart (which includes category info):
+                        {cartJson}
+
+                        Available categories in our store:
+                        {categoriesJson}
+
+                        Rules:
+                        1. The previous agent's output contains active deals (already qualifying) and
+                           near-miss deals (almost qualifying). Use both to generate suggestions.
+                        2. For category-level promotions, suggest items from the SAME category that
+                           would help trigger the deal (e.g. adding another Electronics item to meet
+                           a category quantity threshold).
+                        3. Use SearchProducts / GetProductsByCategory to find real products — only
+                           suggest products that the tools actually returned.
+                        4. Include calculated savings for each suggestion where applicable.
+                        5. Also suggest complementary products based on what's in the cart
+                           (e.g. phone case for a phone, charger for a laptop).
+                        6. Max 5 suggestions, prioritizing those with the highest savings.",
+                    ResponseFormat = ChatResponseFormat.ForJsonSchema<AnalysisResponse>(),
+                    Tools =
+                    [
+                        AIFunctionFactory.Create(
+                            (
+                                [Description("Search query — e.g. 'phone', 'monitor', 'keyboard'")]
+                                    string query
+                            ) => ShoppingTools.SearchProducts(query, productService),
+                            "SearchProducts",
+                            "Search products by keyword. Returns matching products from the catalog."
+                        ),
+                        AIFunctionFactory.Create(
+                            ([Description("The category ID")] int categoryId) =>
+                                ShoppingTools.GetProductsByCategory(categoryId, productService),
+                            "GetProductsByCategory",
+                            "Get all products in a category."
+                        ),
+                    ],
+                },
+            },
+            null!,
+            null!
         );
-
-        var options = new ChatOptions
-        {
-            Tools = [tool],
-            ResponseFormat = ChatResponseFormat.ForJsonSchema<SuggestionResult>(),
-        };
-
-        var messages = new List<ChatMessage>
-        {
-            new(
-                ChatRole.System,
-                $"""
-                You are a smart shopping assistant.
-
-                Current cart (JSON):
-                {cartJson}
-
-                Available categories (JSON):
-                {categoriesJson}
-
-                Promotion analysis (JSON):
-                {promotionAnalysisJson}
-
-                Instructions:
-                1. Call GetProductsByCategory for categories relevant to the cart contents.
-                2. Suggest products that naturally complement what is already in the cart.
-                3. Prioritise products that would activate near-miss promotions identified in the analysis.
-                   For each such suggestion include in Reason: "Add this to unlock: <promotion name>".
-                4. Return MAXIMUM 5 suggestions total.
-                5. Do not suggest products already in the cart.
-                6. Return only the JSON — no commentary.
-                """
-            ),
-            new(ChatRole.User, "Suggest relevant products for this cart."),
-        };
-
-        var response = await chatClient.GetResponseAsync(messages, options);
-        var text = response.Messages.LastOrDefault()?.Text ?? "{}";
-        return JsonSerializer.Deserialize<SuggestionResult>(text) ?? new SuggestionResult();
     }
 }

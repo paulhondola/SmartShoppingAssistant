@@ -1,1 +1,11 @@
 $kind: collection
+name: Product CRUD
+order:
+  - Get All Products
+  - Create Product
+  - Get Product by ID
+  - Update Product
+  - Delete Product
+  - Get Deleted Product (404)
+  - Update Non-existent Product (404)
+  - Delete Non-existent Product (404)

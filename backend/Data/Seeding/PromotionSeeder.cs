@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Data.Seeding;
 
-public class PromotionSeeder : IEntitySeeder
+public class PromotionSeeder(SmartShoppingAssistantDbContext context) : IEntitySeeder
 {
-    public async Task SeedAsync(SmartShoppingAssistantDbContext context)
+    public async Task SeedAsync()
     {
         if (context.Promotions.Any())
             return;

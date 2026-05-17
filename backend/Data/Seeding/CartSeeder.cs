@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Data.Seeding;
 
-public class CartSeeder : IEntitySeeder
+public class CartSeeder(SmartShoppingAssistantDbContext context)  : IEntitySeeder
 {
-    public async Task SeedAsync(SmartShoppingAssistantDbContext context)
+    public async Task SeedAsync()
     {
         if (context.Cart.Any())
             return;

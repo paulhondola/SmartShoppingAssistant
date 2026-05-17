@@ -13,11 +13,26 @@ public static class ShoppingTools
     public static async Task<List<PromotionGetDto>> GetPromotionsForProduct(
         [Description("The product ID to check")] int productId,
         IPromotionService promotionService
-    ) => await promotionService.GetForProductAsync(productId);
+    )
+    {
+        return await promotionService.GetForProductAsync(productId);
+    }
 
-    [Description("Get all products available in a specific category.")]
-    public static async Task<List<ProductGetDto>> GetProductsByCategory(
-        [Description("The category ID to search in")] int categoryId,
+    [Description("Search products by keyword. Returns matching products from the catalog.")]
+    public static async Task<List<ProductGetDto>> SearchProducts(
+        [Description("Search query (e.g. 'cheese', 'bread', 'olive oil')")] string query,
         IProductService productService
-    ) => await productService.GetByCategoryAsync(categoryId);
+    )
+    {
+        return await productService.SearchAsync(query);
+    }
+
+    [Description("Get all products in a category.")]
+    public static async Task<List<ProductGetDto>> GetProductsByCategory(
+        [Description("The category ID")] int categoryId,
+        IProductService productService
+    )
+    {
+        return await productService.GetByCategoryAsync(categoryId);
+    }
 }

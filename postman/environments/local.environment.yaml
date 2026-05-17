@@ -1,10 +1,4 @@
 name: Local
 values:
   - key: baseUrl
-    value: 'http://localhost:5120'
-  - key: productId
-    value: '1'
-  - key: categoryId
-    value: '1'
-  - key: promotionId
-    value: '1'
+    value: 'localhost:5120'

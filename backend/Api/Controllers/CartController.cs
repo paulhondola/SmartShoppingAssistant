@@ -7,7 +7,7 @@ namespace Api.Controllers;
 
 [Route("api/cart")]
 [ApiController]
-public class CartController(ICartService cartService, IAnalysisService? analysisService = null)
+public class CartController(ICartService cartService)
     : ControllerBase
 {
     [HttpGet]
@@ -69,13 +69,10 @@ public class CartController(ICartService cartService, IAnalysisService? analysis
         return NoContent();
     }
 
-    [HttpGet("analysis")]
-    public async Task<ActionResult<CartAnalysisResponse>> GetAnalysis()
+    [HttpGet("analyze")]
+    public async Task<IActionResult> AnalyzeCart()
     {
-        if (analysisService is null)
-            return StatusCode(503, "AI analysis is not configured. Set OpenAI:ApiKey to enable.");
-
-        var result = await analysisService.AnalyzeCartAsync();
-        return Ok(result);
+        var analysisResponse = await cartService.AnalyzeCartAsync();
+        return Ok(analysisResponse);
     }
 }

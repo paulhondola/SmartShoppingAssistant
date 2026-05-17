@@ -1,1 +1,11 @@
 $kind: collection
+name: Category CRUD
+order:
+  - Get All Categories
+  - Create Category
+  - Get Category by ID
+  - Update Category
+  - Delete Category
+  - Get Deleted Category (404)
+  - Update Non-existent Category (404)
+  - Delete Non-existent Category (404)

@@ -38,7 +38,8 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IPromotionService, PromotionService>();
 builder.Services.AddScoped<ICartService, CartService>();
 
-var openAi = builder.Configuration.GetSection(OpenAiOptions.SectionName).Get<OpenAiOptions>()
+var openAi =
+    builder.Configuration.GetSection(OpenAiOptions.SectionName).Get<OpenAiOptions>()
     ?? new OpenAiOptions();
 
 builder.Services.Configure<OpenAiOptions>(
@@ -58,15 +59,36 @@ if (openAi.IsConfigured)
 
     builder.Services.AddScoped<IPromotionCheckerAgent, PromotionCheckerAgent>();
     builder.Services.AddScoped<ISuggestionComposerAgent, SuggestionComposerAgent>();
-    builder.Services.AddScoped<IAnalysisService, AnalysisService>();
 }
+else
+{
+    builder.Services.AddScoped<IPromotionCheckerAgent, UnavailablePromotionCheckerAgent>();
+    builder.Services.AddScoped<ISuggestionComposerAgent, UnavailableSuggestionComposerAgent>();
+}
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(
+        "AllowAnyOrigin",
+        corsPolicyBuilder =>
+        {
+            corsPolicyBuilder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+        }
+    );
+});
+
+builder.Services.AddScoped<CategorySeeder>();
+builder.Services.AddScoped<ProductSeeder>();
+builder.Services.AddScoped<PromotionSeeder>();
+builder.Services.AddScoped<CartSeeder>();
+builder.Services.AddScoped<DatabaseSeeder>();
 
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<SmartShoppingAssistantDbContext>();
-    await DataSeeder.SeedAsync(db);
+    var seeder = scope.ServiceProvider.GetRequiredService<DatabaseSeeder>();
+    await seeder.SeedAsync();
 }
 
 if (app.Environment.IsDevelopment())

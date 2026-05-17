@@ -1,1 +1,11 @@
 $kind: collection
+name: Promotion CRUD
+order:
+  - Get All Promotions
+  - Create Promotion
+  - Get Promotion by ID
+  - Update Promotion
+  - Delete Promotion
+  - Get Deleted Promotion (404)
+  - Update Non-existent Promotion (404)
+  - Delete Non-existent Promotion (404)

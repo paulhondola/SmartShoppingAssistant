@@ -1,0 +1,5 @@
+$kind: http-request
+name: Analyze Cart
+url: "{{baseUrl}}/api/cart/analyze"
+method: GET
+order: 1779014865208
